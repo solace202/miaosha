@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.miaoshaproject.dao.UserDoMapper">
+  <resultMap id="BaseResultMap" type="com.miaoshaproject.dataobject.UserDo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="telphone" jdbcType="VARCHAR" property="telphone" />
+    <result column="register_mode" jdbcType="VARCHAR" property="registerMode" />
+    <result column="third_party_id" jdbcType="VARCHAR" property="thirdPartyId" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, name, gender, age, telphone, register_mode, third_party_id
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_infor
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_infor
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="com.miaoshaproject.dataobject.UserDo">
+    insert into user_infor (id, name, gender,
+      age, telphone, register_mode, 
+      third_party_id)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, 
+      #{age,jdbcType=INTEGER}, #{telphone,jdbcType=VARCHAR}, #{registerMode,jdbcType=VARCHAR}, 
+      #{thirdPartyId,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="insertSelective" parameterType="com.miaoshaproject.dataobject.UserDo">
+    insert into user_infor
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="gender != null">
+        gender,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="telphone != null">
+        telphone,
+      </if>
+      <if test="registerMode != null">
+        register_mode,
+      </if>
+      <if test="thirdPartyId != null">
+        third_party_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="telphone != null">
+        #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="registerMode != null">
+        #{registerMode,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyId != null">
+        #{thirdPartyId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.miaoshaproject.dataobject.UserDo">
+    update user_infor
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null">
+        gender = #{gender,jdbcType=INTEGER},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="telphone != null">
+        telphone = #{telphone,jdbcType=VARCHAR},
+      </if>
+      <if test="registerMode != null">
+        register_mode = #{registerMode,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyId != null">
+        third_party_id = #{thirdPartyId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.miaoshaproject.dataobject.UserDo">
+    update user_infor
+    set name = #{name,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=INTEGER},
+      age = #{age,jdbcType=INTEGER},
+      telphone = #{telphone,jdbcType=VARCHAR},
+      register_mode = #{registerMode,jdbcType=VARCHAR},
+      third_party_id = #{thirdPartyId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
