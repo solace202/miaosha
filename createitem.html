@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		div {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="content">
+		
+		<h3>新建商品</h3>
+		<div>
+			<label>商品名称</label>
+			<div>
+				<input type="text" name="title" placeholder="商品名称" id="title">
+			</div>
+		</div>
+		<div>
+			<label>价格</label>
+			<div>
+				<input type="text" name="price" placeholder="价格" id="price">
+			</div>
+		</div>
+		<div>
+			<label>库存</label>
+			<div>
+				<input type="text" name="stock" placeholder="库存" id="stock">
+			</div>
+		</div>
+		<div>
+			<label>描述</label>
+			<div>
+				<input type="text" name="description" placeholder="描述" id="description">
+			</div>
+		</div>
+		<div>
+			<label>销量</label>
+			<div>
+				<input type="text" name="sales" placeholder="销量" id="sales">
+			</div>
+		</div>
+		<div>
+			<label>图片</label>
+			<div>
+				<input type="text" name="imgUrl" placeholder="图片" id="imgUrl">
+			</div>
+		</div>
+		<div>
+			<button id="createItem" type="submit">
+				新建
+			</button>
+		</div>
+
+	</div>
+
+</body>
+<script type="text/javascript" src="static\assets\global\plugins\jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		//绑定otp的click事件
+		$("#createItem").on("click", function() {
+			var title = $('#title').val();
+			var price = $('#price').val();
+			var stock = $('#stock').val();
+			var description = $('#description').val();
+			var sales = $('#sales').val();
+			var imgUrl = $('#imgUrl').val();
+
+			if(title) {
+				$.ajax({
+					type:'post',
+					contentType:'application/x-www-form-urlencoded',
+					url:'http://localhost:8090/item/createItem',
+					data:{
+						'title':title,
+						'price':price,
+						'stock':stock,
+						'description':description,
+						'sales':sales,
+						'imgUrl':imgUrl
+					},
+					xhrFields:{withCredentials:true},
+					success:function(data) {
+						if(data.status == 'success') {
+							alert('新建成功');
+						}
+						else {
+							alert('新建失败，原因为:' + data.data.errMsg);
+						}
+					},
+					error:function(data) {
+						alert('新建失败，原因为' + data.responseText);
+					}
+				});
+			}
+		});
+	});
+</script>
+</html>

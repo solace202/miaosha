@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		div {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+
+	<div>
+		
+		<h3>获取otp信息</h3>
+		<div>
+			<label>手机号</label>
+			<div>
+				<input type="text" name="telphone" placeholder="手机号" id="telphone">
+			</div>
+		</div>
+		<div>
+			<button id="getotp" type="submit">
+				获取otp短信
+			</button>
+		</div>
+
+	</div>
+
+</body>
+<script type="text/javascript" src="static\assets\global\plugins\jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		//绑定otp的click事件
+		$("#getotp").on("click", function() {
+			var telphone = $('#telphone').val();
+
+			if(telphone) {
+				$.ajax({
+					type:'post',
+					contentType:'application/x-www-form-urlencoded',
+					url:'http://localhost:8090/user/getotp',
+					data:{
+						'telphone':telphone
+					},
+					xhrFields:{withCredentials:true},
+					success:function(data) {
+						if(data.status == 'success') {
+							alert('otp已经成功发送到您的手机，请注意查收！');
+						}
+						else {
+							alert('otp发送失败，原因为:' + data.data.errMsg);
+						}
+					},
+					error:function(data) {
+						alert('otp发送失败，原因为' + data.responseText);
+					}
+				});
+			}
+		});
+	});
+</script>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		div {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="content">
+		
+		<h3>获取otp信息</h3>
+		<div>
+			<label>手机号</label>
+			<div>
+				<input type="text" name="telphone" placeholder="手机号" id="telphone">
+			</div>
+		</div>
+		<div>
+			<label>验证码</label>
+			<div>
+				<input type="text" name="otpCode" placeholder="验证码" id="otpCode">
+			</div>
+		</div>
+		<div>
+			<label>姓名</label>
+			<div>
+				<input type="text" name="name" placeholder="姓名" id="name">
+			</div>
+		</div>
+		<div>
+			<label>性别</label>
+			<div>
+				<input type="text" name="gender" placeholder="性别" id="gender">
+			</div>
+		</div>
+		<div>
+			<label>年龄</label>
+			<div>
+				<input type="text" name="age" placeholder="年龄" id="age">
+			</div>
+		</div>
+		<div>
+			<label>密码</label>
+			<div>
+				<input type="password" name="password" placeholder="密码" id="password">
+			</div>
+		</div>
+		<div>
+			<button id="register" type="submit">
+				注册
+			</button>
+		</div>
+
+	</div>
+
+</body>
+<script type="text/javascript" src="static\assets\global\plugins\jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		//绑定otp的click事件
+		$("#register").on("click", function() {
+			var telphone = $('#telphone').val();
+			var otpCode = $('#otpCode').val();
+			var name = $('#name').val();
+			var gender = $('#gender').val();
+			var age = $('#age').val();
+			var password = $('#password').val();
+
+			if(telphone) {
+				$.ajax({
+					type:'post',
+					contentType:'application/x-www-form-urlencoded',
+					url:'http://localhost:8090/user/register',
+					data:{
+						'telphone':telphone,
+						'otpCode':otpCode,
+						'name':name,
+						'gender':gender,
+						'age':age,
+						'password':password,
+
+					},
+					xhrFields:{withCredentials:true},
+					success:function(data) {
+						if(data.status == 'success') {
+							alert('注册成功');
+						}
+						else {
+							alert('注册失败，原因为:' + data.data.errMsg);
+						}
+					},
+					error:function(data) {
+						alert('注册失败，原因为' + data.responseText);
+					}
+				});
+			}
+		});
+	});
+</script>
+</html>
