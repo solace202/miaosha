@@ -31,6 +31,16 @@ public class ItemModel {
    // 销量
    private Integer sales;
 
+   private PromoModel promoModel;
+
+   public PromoModel getPromoModel() {
+      return promoModel;
+   }
+
+   public void setPromoModel(PromoModel promoModel) {
+      this.promoModel = promoModel;
+   }
+
    // 商品描述图片
    @NotBlank(message = "商品图片信息不能为空")
    private String imgUrl;

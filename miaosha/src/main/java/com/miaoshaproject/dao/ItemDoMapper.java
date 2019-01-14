@@ -1,6 +1,9 @@
 package com.miaoshaproject.dao;
 
 import com.miaoshaproject.dataobject.ItemDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface ItemDoMapper {
     /**
@@ -50,4 +53,8 @@ public interface ItemDoMapper {
      * @mbg.generated Fri Jan 11 16:53:19 CST 2019
      */
     int updateByPrimaryKey(ItemDo record);
+
+    void increaseSales(@Param("id") Integer itemId, @Param("amount")Integer amount);
+
+    List<ItemDo> listItem();
 }

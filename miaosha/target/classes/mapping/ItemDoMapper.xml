@@ -33,6 +33,13 @@
     from item
     where id = #{id,jdbcType=INTEGER}
   </select>
+
+  <select id="listItem" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from item
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     <!--
       WARNING - @mbg.generated
@@ -143,4 +150,11 @@
       img_url = #{imgUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="increaseSales" parameterType="com.miaoshaproject.dataobject.ItemDo">
+    update item
+    set sales = sales + #{amount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
 </mapper>

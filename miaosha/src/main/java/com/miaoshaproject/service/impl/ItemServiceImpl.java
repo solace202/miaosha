@@ -7,7 +7,9 @@ import com.miaoshaproject.dataobject.ItemStockDo;
 import com.miaoshaproject.error.BusinessException;
 import com.miaoshaproject.error.EmBusinessError;
 import com.miaoshaproject.service.ItemService;
+import com.miaoshaproject.service.PromoService;
 import com.miaoshaproject.service.model.ItemModel;
+import com.miaoshaproject.service.model.PromoModel;
 import com.miaoshaproject.validator.ValidationResult;
 import com.miaoshaproject.validator.ValidatorImpl;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -27,6 +30,9 @@ public class ItemServiceImpl implements ItemService {
 
    @Autowired
    private ItemStockDoMapper itemStockDoMapper;
+
+   @Autowired
+   private PromoService promoService;
 
    @Override
    @Transactional
@@ -48,18 +54,42 @@ public class ItemServiceImpl implements ItemService {
 
    @Override
    public List<ItemModel> listItem() {
+      List<ItemDo> itemDoList = itemDoMapper.listItem();
 
+      List<ItemModel> itemModelList = itemDoList.stream().map(itemDo -> {
+         ItemStockDo itemStockDo = itemStockDoMapper.selectByItemId(itemDo.getId());
+         ItemModel itemModel = convertFromItemDo(itemDo, itemStockDo);
 
+         return itemModel;
+      }).collect(Collectors.toList());
 
-      return null;
+      return itemModelList;
    }
 
    @Override
    public ItemModel getItemById(Integer id) {
       ItemDo itemDo = itemDoMapper.selectByPrimaryKey(id);
+      // 获取商品库存信息
       ItemStockDo itemStockDo = itemStockDoMapper.selectByItemId(id);
 
-      return convertFromItemDo(itemDo, itemStockDo);
+      ItemModel itemModel = convertFromItemDo(itemDo, itemStockDo);
+
+      // 获取商品活动信息
+      PromoModel promoModel = promoService.getPrompByItemId(itemDo.getId());
+      itemModel.setPromoModel(promoModel);
+
+      return itemModel;
+   }
+
+   @Override
+   public boolean decreaseItem(Integer itemId, Integer amount) {
+      int affectRows = itemStockDoMapper.decreaseItem(itemId, amount);
+
+      return affectRows > 0;
+   }
+
+   public void increaseSales(Integer itemId, Integer amount) {
+      itemDoMapper.increaseSales(itemId, amount);
    }
 
    public ItemDo convertFromItemModel(ItemModel itemModel) {
@@ -74,7 +104,6 @@ public class ItemServiceImpl implements ItemService {
    }
 
    public ItemModel convertFromItemDo(ItemDo itemDo, ItemStockDo itemStockDo) {
-
       if(itemDo == null || itemStockDo == null) {
          return null;
       }

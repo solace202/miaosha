@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		div {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<h3 class="form-title">浏览商品列表</h3>
+		<div class="table-resopnsive">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>商品名</th>
+						<th>商品图片</th>
+						<th>商品描述</th>
+						<th>商品价格</th>
+						<th>商品库存</th>
+						<th>商品销量</th>
+					</tr>
+				</thead>
+				<tbody id="container">
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="static\assets\global\plugins\jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	var g_itemList = [];
+
+	jQuery(document).ready(function() {
+		$.ajax({
+			type:'get',
+			contentType:'application/x-www-form-urlencoded',
+			url:'http://localhost:8090/item/listitem',
+			xhrFields:{withCredentials:true},
+			success:function(data) {
+				if(data.status == 'success') {
+					g_itemList = data.data;
+					reloadDom();
+				}
+				else {
+					alert('获取商品信息失败，原因为:' + data.data.errMsg);
+				}
+			},
+			error:function(data) {
+				alert('获取商品信息失败，原因为' + data.responseText);
+			}
+		});
+	});
+
+	function reloadDom() {
+		for(var i = 0; i < g_itemList.length; i++) {
+			var itemVo = g_itemList[i];
+			var dom = "<tr data-id="+itemVo.id+" id='itemDetail"+itemVo.id+"'><td>"+itemVo.title+"</td>"
+					+ "<td><img style='width: 100px; height: auto;' src='"+itemVo.imgUrl+"' /></td>"
+					+ "<td>"+itemVo.description+"</td>"
+					+ "<td>"+itemVo.price+"</td>"
+					+ "<td>"+itemVo.stock+"</td>"
+					+ "<td>"+itemVo.sales+"</td></tr>";
+
+			$('#container').append(dom);
+			$('#itemDetail' + itemVo.id).on("click", function(e) {
+				window.location.href="getItem.html?id=" + $(this).data('id');
+			});
+		}
+	}
+</script>
+</html>

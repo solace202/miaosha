@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		div {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="content">
+		
+		<h3>商品详情</h3>
+		<div>
+			<label>商品名称</label>
+			<div>
+				<input type="text" name="title" placeholder="商品名称" id="title" >
+			</div>
+		</div>
+		<div>
+			<label>价格</label>
+			<div>
+				<input type="text" name="price" placeholder="价格" id="price">
+			</div>
+		</div>
+		<div>
+			<label>库存</label>
+			<div>
+				<input type="text" name="stock" placeholder="库存" id="stock">
+			</div>
+		</div>
+		<div>
+			<label>描述</label>
+			<div>
+				<input type="text" name="description" placeholder="描述" id="description">
+			</div>
+		</div>
+		<div>
+			<label>销量</label>
+			<div>
+				<input type="text" name="sales" placeholder="销量" id="sales">
+			</div>
+		</div>
+		<div>
+			<label>图片</label>
+			<div>
+				<img id="imgUrl" />
+			</div>
+		</div>
+		<div>
+			<button id="createorder" type="submit">
+				下单
+			</button>
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="static\assets\global\plugins\jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		function GetRequest() {
+		   var url = location.search; //获取url中"?"符后的字串
+		   var theRequest = new Object();
+
+		   if (url.indexOf("?") != -1) {
+		      var str = url.substr(1);
+		      strs = str.split("&");
+		      for(var i = 0; i < strs.length; i ++) {
+		         theRequest[strs[i].split("=")[0]]=(strs[i].split("=")[1]);
+		      }
+		   }
+
+		   return theRequest;
+		}
+
+		var requestPara = GetRequest();
+
+		$('#createorder').on("click", function() {
+			$.ajax({
+				type:'post',
+				contentType:'application/x-www-form-urlencoded',
+				url:'http://localhost:8090/item/createorder',
+				xhrFields:{withCredentials:true},
+				data:{
+					"itemId": requestPara['id'],
+					"amount":1
+				}
+				success:function(data) {
+					if(data.status == 'success') {
+						alert('下单成功，原因为' + data.responseText);
+
+						if(data.data.errCode == 20003) {
+							window.location.href="login.html";
+						}
+					}
+					else {
+						alert('下单失败，原因为' + data.responseText);
+					}
+				},
+				error:function(data) {
+					alert('下单失败，原因为' + data.responseText);
+				}
+			});
+		});
+	});
+</script>
+</html>

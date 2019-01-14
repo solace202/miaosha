@@ -121,4 +121,10 @@
       item_id = #{itemId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="decreaseItem" parameterType="com.miaoshaproject.dataobject.ItemStockDo">
+    update item_stock
+    set stock = stock - #{amount,jdbcType=INTEGER}
+    where item_id = #{itemId,jdbcType=INTEGER}
+  </update>
 </mapper>

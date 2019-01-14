@@ -5,12 +5,16 @@ import com.miaoshaproject.error.BusinessException;
 import com.miaoshaproject.response.CommonReturnType;
 import com.miaoshaproject.service.ItemService;
 import com.miaoshaproject.service.model.ItemModel;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/item")
@@ -46,6 +50,30 @@ public class ItemController extends BaseController {
       return CommonReturnType.create(itemVO);
    }
 
+   // 获取商品列表的controller
+   @RequestMapping(value = "/listitem", method = {RequestMethod.GET})
+   @ResponseBody
+   public CommonReturnType listItem() {
+      List<ItemModel> itemModelList = itemService.listItem();
+
+      List<ItemVO> itemVOList = itemModelList.stream().map(itemModel -> {
+         ItemVO itemVO = convertFromItemModel(itemModel);
+
+         return itemVO;
+      }).collect(Collectors.toList());
+
+      return CommonReturnType.create(itemVOList);
+   }
+
+   // 获取商品详情的controller
+   @RequestMapping(value = "/get", method = {RequestMethod.GET})
+   @ResponseBody
+   public CommonReturnType getItem(@RequestParam(name="itemId") Integer itemId) {
+      ItemModel itemModel = itemService.getItemById(itemId);
+      ItemVO itemVO = convertFromItemModel(itemModel);
+
+      return CommonReturnType.create(itemVO);
+   }
 
    public ItemVO convertFromItemModel(ItemModel itemModel) {
       if(itemModel == null) {
@@ -55,7 +83,15 @@ public class ItemController extends BaseController {
       ItemVO itemVO = new ItemVO();
       BeanUtils.copyProperties(itemModel, itemVO);
 
+      if(itemModel.getPromoModel() != null) {
+         DateTime dateTime = new DateTime(itemModel.getPromoModel().getStartTime());
+
+         itemVO.setPromoId(itemModel.getPromoModel().getId());
+         itemVO.setPromoPrice(itemModel.getPromoModel().getPromoItemPrice());
+         itemVO.setStatus(itemModel.getPromoModel().getStatus());
+         itemVO.setStartDate(dateTime.toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));
+      }
+
       return itemVO;
    }
-
 }

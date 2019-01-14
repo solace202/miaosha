@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		div {
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="content">
+		
+		<h3>商品详情</h3>
+		<div id="promoStartDateContainer">
+			<div>
+				<label style="color: red;" id="promoStartDate">
+			</div>
+		</div>
+
+		<div>
+			<label>商品名称</label>
+			<div>
+				<input disabled="disabled" type="text" name="title" placeholder="商品名称" id="title" >
+			</div>
+		</div>
+		<div id="normalPrice">
+			<label>价格</label>
+			<div>
+				<input disabled="disabled" type="text" name="price" placeholder="价格" id="price">
+			</div>
+		</div>
+		<div id="promoPriceContainer">
+			<label style="color: red;">秒杀价格</label>
+			<div>
+				<label style="color: red;" id="promoPrice">
+			</div>
+		</div>
+		<div>
+			<label>库存</label>
+			<div>
+				<input disabled="disabled" type="text" name="stock" placeholder="库存" id="stock">
+			</div>
+		</div>
+		<div>
+			<label>描述</label>
+			<div>
+				<input disabled="disabled" type="text" name="description" placeholder="描述" id="description">
+			</div>
+		</div>
+		<div>
+			<label>销量</label>
+			<div>
+				<input disabled="disabled" type="text" name="sales" placeholder="销量" id="sales">
+			</div>
+		</div>
+		<div>
+			<label>图片</label>
+			<div>
+				<img id="imgUrl" />
+			</div>
+		</div>
+		<div>
+			<button id="createorder" type="submit">
+				下单
+			</button>
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="static\assets\global\plugins\jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+	jQuery(document).ready(function() {
+		function GetRequest() {
+		   var url = location.search; //获取url中"?"符后的字串
+		   var theRequest = new Object();
+
+		   if (url.indexOf("?") != -1) {
+		      var str = url.substr(1);
+		      strs = str.split("&");
+		      for(var i = 0; i < strs.length; i ++) {
+		         theRequest[strs[i].split("=")[0]]=(strs[i].split("=")[1]);
+		      }
+		   }
+
+		   return theRequest;
+		}
+
+		var requestPara = GetRequest();
+		var g_itemVO = {};
+
+		$.ajax({
+			type:'get',
+			contentType:'application/x-www-form-urlencoded',
+			url:'http://localhost:8090/item/get?itemId=' + requestPara['id'],
+			xhrFields:{withCredentials:true},
+			success:function(data) {
+				g_itemVO = data.data;
+				reloadDom();
+
+				setInterval(reloadDom, 1000);
+			},
+			error:function(data) {
+				alert('获取商品失败，原因为' + data.responseText);
+			}
+		});
+
+		$('#createorder').on("click", function() {
+			$.ajax({
+				type:'post',
+				contentType:'application/x-www-form-urlencoded',
+				url:'http://localhost:8090/order/createorder',
+				xhrFields:{withCredentials:true},
+				data:{
+					"itemId": requestPara['id'],
+					"amount":1,
+					"promoId":g_itemVO.promoId
+				},
+				success:function(data) {
+					if(data.status == 'success') {
+						alert('下单成功');
+						window.location.reload();
+					}
+					else {
+						alert('下单失败，原因为' + data.data.errMsg);
+
+						if(data.data.errCode == 20003) {
+							window.location.href="login.html";
+						}
+					}
+				},
+				error:function(data) {
+					alert('下单失败，原因为' + data.responseText);
+				}
+			});
+		});
+
+		function reloadDom() {
+			$('#title').val(g_itemVO['title']);
+			$('#price').val(g_itemVO['price']);
+			$('#stock').val(g_itemVO['stock']);
+			$('#description').val(g_itemVO['description']);
+			$('#sales').val(g_itemVO['sales']);
+			$('#imgUrl').attr("src", g_itemVO['imgUrl']);
+console.log(g_itemVO);
+			if(g_itemVO.status == 1) {
+				// 秒杀活动还未开始
+				var startDate = +new Date(g_itemVO.startDate + '');
+				var now = +new Date();
+				var deldate = Math.floor((startDate - now) / 1000);
+
+				if(deldate <= 0) {
+					g_itemVO.status = 2;
+					reloadDom();
+				}
+
+				$('#promoStartDate').text("秒杀活动将于： " + g_itemVO.startDate + " 开始售卖 倒计时： " + deldate + "秒");
+				$('#promoPrice').text(g_itemVO.promoPrice);
+
+				$('#createorder').attr('disabled', true);
+			}
+			else if(g_itemVO.status == 2) {
+				// 秒杀活动正在进行
+				$('#promoStartDate').text("秒杀活动正在进行");
+				$('#promoPrice').text(g_itemVO.promoPrice);
+				$('#normalPrice').hide();
+			
+				$('#createorder').attr('disabled', false);
+			}
+		}
+	});
+</script>
+</html>
